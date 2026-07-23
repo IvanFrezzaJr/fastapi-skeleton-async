@@ -1,0 +1,45 @@
+name: Pipeline
+
+env:
+  DATABASE_URL: ${{ secrets.DATABASE_URL }}
+  SECRET_KEY: ${{ secrets.SECRET_KEY }}
+  ALGORITHM: ${{ secrets.ALGORITHM }}
+  ACCESS_TOKEN_EXPIRE_MINUTES: ${{ vars.ACCESS_TOKEN_EXPIRE_MINUTES }}
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+      inputs:
+        motivo:
+          description: 'Motivo da execução manual'
+          required: false
+          default: 'Teste manual'
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    environment: workflow  # shall be same name of github pipeline
+    steps:
+      - name: Copia os arquivos do repositório
+        uses: actions/checkout@v4
+
+      - name: Instalar o python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Instalar o uv
+        run: pipx install uv
+
+      - name: Instalar dependências
+        run: uv sync --active
+
+      - name: Executar lintter checker
+        run: uv run ruff check .
+
+      - name: Executar typing checker
+        run: uv run mypy .
+
+      - name: Executar testes
+        run: uv run task test

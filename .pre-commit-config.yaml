@@ -1,0 +1,45 @@
+repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v5.0.0
+    hooks:
+      - id: check-case-conflict
+      - id: check-executables-have-shebangs
+      - id: check-json
+      - id: check-merge-conflict
+      - id: check-toml
+      - id: check-yaml
+      - id: check-added-large-files
+      - id: end-of-file-fixer
+      - id: mixed-line-ending
+        args: [--fix=lf]
+      - id: trailing-whitespace
+
+  - repo: local
+    hooks:
+      - id: ruff-check
+        name: Ruff check
+        entry: uv run ruff check --fix .
+        language: system
+        pass_filenames: false
+        types: [python]
+
+      - id: ruff-format
+        name: Ruff format
+        entry: uv run ruff format .
+        language: system
+        pass_filenames: false
+        types: [python]
+
+      - id: mypy
+        name: Static typing checker
+        entry: uv run mypy .
+        language: system
+        pass_filenames: false
+        types: [python]
+
+      - id: pytest
+        name: Run pytest
+        entry: uv run pytest
+        language: system
+        pass_filenames: false
+        types: [python]
